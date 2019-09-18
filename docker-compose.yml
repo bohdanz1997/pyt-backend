@@ -1,0 +1,38 @@
+version: '3.5'
+
+services:
+  mysql:
+    container_name: pyt_mysql
+    image: mysql:5.7.12
+    restart: always
+    environment:
+      - MYSQL_DATABASE=pyt
+      - MYSQL_USER=pyt
+      - MYSQL_PASSWORD=pyt
+      - MYSQL_RANDOM_ROOT_PASSWORD=true
+    volumes:
+      - ./.app/db:/var/lib/mysql
+    expose:
+      - 3306
+    ports:
+      - 3320:3306
+    networks:
+      - pyt
+  server:
+    container_name: pyt_server
+    image: node:10
+    restart: always
+    command: npm run dev
+    working_dir: /usr/src/app
+    env_file: .env
+    volumes:
+      - .:/usr/src/app
+    ports:
+      - 8080:3000
+    networks:
+      - pyt
+
+networks:
+  pyt:
+    attachable: true
+    name: pyt

@@ -1,0 +1,1 @@
+export { exercisesApi } from './routes'

@@ -1,0 +1,43 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/app.js",
+  "scripts": {
+    "dev": "nodemon src/index.js -w src",
+    "knex": "knex"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "ajv": "^6.10.2",
+    "createrest": "^0.15.0",
+    "createrest-koa": "^0.14.2",
+    "dotenv": "^8.1.0",
+    "knex": "^0.19.4",
+    "koa": "^2.8.1",
+    "koa-body": "^4.1.1",
+    "koa-logger": "^3.2.1",
+    "koa-router": "^7.4.0",
+    "koa-bodyparser": "^4.2.1",
+    "koa-compress": "^3.0.0",
+    "@koa/cors": "^3.0.0",
+    "module-alias": "^2.2.1",
+    "mysql2": "^1.7.0",
+    "objection": "^1.6.9"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.6.0",
+    "@types/koa": "^2.0.49",
+    "@babel/register": "^7.6.0",
+    "@babel/plugin-proposal-object-rest-spread": "^7.5.5",
+    "@babel/plugin-transform-modules-commonjs": "^7.6.0",
+    "@babel/plugin-proposal-class-properties": "^7.5.5",
+    "nodemon": "^1.19.2"
+  },
+  "_moduleAliases": {
+    "@lib": "src/lib",
+    "@features": "src/features"
+  }
+}
