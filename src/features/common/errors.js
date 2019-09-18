@@ -18,7 +18,7 @@ export class ValidationError extends CustomError {
   constructor(formErrors) {
     super('validation_error')
     this.message = formErrors
-    this.httpStatus = 500
+    this.httpStatus = 422
   }
 }
 

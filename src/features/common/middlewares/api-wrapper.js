@@ -20,7 +20,7 @@ export const apiWrapper = () => async (ctx, next) => {
         return resolve({
           ok: false,
           error: error.message || error.name || error,
-          status: STATUS_BAD_REQUEST,
+          status: error.httpStatus || STATUS_BAD_REQUEST,
         })
       })
   })
