@@ -1,4 +1,4 @@
-import { Template, Workout, Set } from '@features/common'
+import { Template, Workout } from '@features/common'
 import { expandQuery } from '@lib/repository'
 import { CustomError } from '@features/common/errors'
 
@@ -51,7 +51,7 @@ export const workoutAddExercise = async (user, workoutId, exerciseId) => {
     .where({ exerciseId })
 
   if (existExercises.length > 0) {
-    throw new CustomError('exercise_exists')
+    throw new CustomError('exercise_already_added')
   }
 
   await workout.$relatedQuery('exercises').relate(exerciseId)
@@ -75,7 +75,7 @@ export const workoutCreateSet = async (user, workoutId, setData) => {
     .where({ id: setData.exerciseId })
 
   if (foundExercises.length === 0) {
-    throw new CustomError('exercise_not_added_to_workout')
+    throw new CustomError('exercise_not_added')
   }
 
   const set = await workout
