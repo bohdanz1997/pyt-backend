@@ -20,5 +20,13 @@ export const workoutSetSchema = {
     position: { type: 'integer' },
     exerciseId: { type: 'integer' },
   },
+}
+
+export const createSetSchema = {
+  ...workoutSetSchema,
   required: ['exerciseId', 'reps', 'weight'],
+}
+
+export const updateSetSchema = {
+  ...workoutSetSchema,
 }

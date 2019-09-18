@@ -7,11 +7,15 @@ import {
   workoutAddExercise,
   workoutRemoveExercise,
   workoutCreateSet,
+  workoutUpdateSet,
+  setsGet,
+  setRemove,
 } from './commands'
 import {
   createWorkoutSchema,
   workoutExerciseSchema,
-  workoutSetSchema,
+  createSetSchema,
+  updateSetSchema,
 } from './schemas'
 
 /**
@@ -29,10 +33,10 @@ export const workoutsApi = (workouts) => {
   })
 
   workouts.group('/:workoutId/sets', (sets) => {
-    sets.post('/', validate(workoutSetSchema), createSet)
+    sets.post('/', validate(createSetSchema), createSet)
     sets.get('/', listSets)
-    sets.put('/', validate(workoutSetSchema), updateSet)
-    sets.del('/', removeSet)
+    sets.put('/:setId', validate(updateSetSchema), updateSet)
+    sets.del('/:setId', removeSet)
   })
 }
 
@@ -40,33 +44,35 @@ const create = (ctx) => workoutCreate(ctx.user, ctx.request.body)
 const list = (ctx) => workoutsGet(ctx.user)
 
 const attachExercise = (ctx) => {
-  const id = Number(ctx.params.workoutId)
+  const { workoutId } = ctx.params
   const { exerciseId } = ctx.request.body
-  return workoutAddExercise(ctx.user, id, exerciseId)
-    .then(() => workoutGet(ctx.user, id))
+  return workoutAddExercise(ctx.user, workoutId, exerciseId)
+    .then(() => workoutGet(ctx.user, workoutId))
 }
 
 const detachExercise = (ctx) => {
-  const id = Number(ctx.params.workoutId)
+  const { workoutId } = ctx.params
   const { exerciseId } = ctx.request.body
-  return workoutRemoveExercise(ctx.user, id, exerciseId)
-    .then(() => workoutGet(ctx.user, id))
+  return workoutRemoveExercise(ctx.user, workoutId, exerciseId)
+    .then(() => workoutGet(ctx.user, workoutId))
 }
 
 const createSet = (ctx) => {
-  const id = Number(ctx.params.workoutId)
-  return workoutCreateSet(ctx.user, id, ctx.request.body)
+  const { workoutId } = ctx.params
+  return workoutCreateSet(ctx.user, workoutId, ctx.request.body)
 }
 
 const updateSet = (ctx) => {
-  const id = Number(ctx.params.workoutId)
-  const body = ctx.request.body
+  const { workoutId, setId } = ctx.params
+  return workoutUpdateSet(ctx.user, workoutId, setId, ctx.request.body)
 }
 
 const listSets = (ctx) => {
-  const id = Number(ctx.params.workoutId)
+  const { workoutId } = ctx.params
+  return setsGet(ctx.user, workoutId)
 }
 
 const removeSet = (ctx) => {
-  const id = Number(ctx.params.workoutId)
+  const { workoutId, setId } = ctx.params
+  return setRemove(workoutId, setId)
 }

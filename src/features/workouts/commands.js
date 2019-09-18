@@ -1,6 +1,5 @@
-import { Template, Workout } from '@features/common'
+import { Template, Workout, Set, CustomError, NotFoundError } from '@features/common'
 import { expandQuery } from '@lib/repository'
-import { CustomError } from '@features/common/errors'
 
 export const workoutCreate = async (user, workoutData) => {
   const { templateId } = workoutData
@@ -45,6 +44,9 @@ export const workoutGet = async (user, id) => {
 
 export const workoutAddExercise = async (user, workoutId, exerciseId) => {
   const workout = await Workout.query().findById(workoutId)
+  if (!workout) {
+    throw new NotFoundError('workout_not_found')
+  }
 
   const existExercises = await workout
     .$relatedQuery('exercises')
@@ -60,6 +62,10 @@ export const workoutAddExercise = async (user, workoutId, exerciseId) => {
 
 export const workoutRemoveExercise = async (user, workoutId, exerciseId) => {
   const workout = await Workout.query().findById(workoutId)
+  if (!workout) {
+    throw new NotFoundError('workout_not_found')
+  }
+
   await workout
     .$relatedQuery('exercises')
     .unrelate()
@@ -69,6 +75,9 @@ export const workoutRemoveExercise = async (user, workoutId, exerciseId) => {
 
 export const workoutCreateSet = async (user, workoutId, setData) => {
   const workout = await Workout.query().findById(workoutId)
+  if (!workout) {
+    throw new NotFoundError('workout_not_found')
+  }
 
   const foundExercises = await workout
     .$relatedQuery('exercises')
@@ -80,13 +89,37 @@ export const workoutCreateSet = async (user, workoutId, setData) => {
 
   const set = await workout
     .$relatedQuery('sets')
-    .insertAndFetch({
+    .insertAndFetch(setData)
+
+  return set
+}
+
+export const workoutUpdateSet = async (user, workoutId, setId, setData) => {
+  const set = await Set
+    .query()
+    .patchAndFetchById(setId, {
       reps: setData.reps,
       weight: setData.weight,
       comment: setData.comment,
       position: setData.position,
-      exerciseId: setData.exerciseId,
     })
 
   return set
+}
+
+export const setsGet = async (user, workoutId) => {
+  const workout = await Workout.query().findById(workoutId)
+  if (!workout) {
+    throw new NotFoundError('workout_not_found')
+  }
+  return workout.$relatedQuery('sets')
+}
+
+export const setRemove = async (workoutId, setId) => {
+  const workout = await Workout.query().findById(workoutId)
+  if (!workout) {
+    throw new NotFoundError('workout_not_found')
+  }
+  await workout.$relatedQuery('sets').deleteById(setId)
+  return true
 }

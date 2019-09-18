@@ -6,7 +6,6 @@ import cors from "@koa/cors"
 import compress from "koa-compress"
 import body from "koa-body"
 import { rootRouter } from './routes'
-import { apiWrapper } from '@features/common'
 
 const port = process.env.PORT
 
@@ -19,8 +18,6 @@ export const server = () => {
     parsedMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE']
   }))
   app.use(logger())
-
-  app.use(apiWrapper())
 
   app.use(rootRouter.routes())
   app.use(rootRouter.allowedMethods())
