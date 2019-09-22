@@ -4,7 +4,7 @@ export const authSchema = {
     password: { type: "string" },
     name: { type: "string" },
   },
-  required: ["email", "password", "name"],
+  required: ["email", "password"],
 }
 
 export const sessionCreateSchema = {

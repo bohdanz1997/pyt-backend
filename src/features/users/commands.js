@@ -1,4 +1,4 @@
-import { Token, User } from '@features/common'
+import { CustomError, Token, User } from '@features/common'
 
 const createToken = (iterations = 3, sep = "") => {
   let cnt = 0
@@ -18,7 +18,7 @@ export const userRegister = async (registerData) => {
 
   const usersWithEmail = await User.query().where('email', email)
   if (usersWithEmail.length > 0) {
-    throw new Error('email_already_exists')
+    throw new CustomError('email_already_exists')
   }
 
   const createdUser = await User.query().insert({
@@ -35,12 +35,12 @@ export const userRegister = async (registerData) => {
 export const userGet = async (token) => {
   const foundToken = await Token.query().findOne({ token })
   if (!foundToken) {
-    throw new Error('invalid_token')
+    throw new CustomError('invalid_token')
   }
 
   const user = await User.query().findById(foundToken.userId)
   if (!user) {
-    throw new Error('invalid_token')
+    throw new CustomError('invalid_token')
   }
 
   return user
@@ -50,11 +50,11 @@ export const userLogin = async (loginData) => {
   const { email, password } = loginData
   const foundUser = await User.query().findOne({ email })
   if (!foundUser) {
-    throw new Error('not_found')
+    throw new CustomError('user_not_found')
   }
 
   if (password !== foundUser.password) {
-    throw new Error('bad_credentials')
+    throw new CustomError('bad_credentials')
   }
 
   const createdToken = await Token.query().insert({

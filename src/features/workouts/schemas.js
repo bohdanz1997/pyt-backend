@@ -1,6 +1,7 @@
 export const createWorkoutSchema = {
   properties: {
     templateId: { type: 'integer' },
+    date: { type: 'string', format: 'date-time' },
   },
   required: ['templateId'],
 }

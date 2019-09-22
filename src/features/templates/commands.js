@@ -30,5 +30,5 @@ export const templatesGet = async (user, body) => {
 
 export const templateRemove = async (id) => {
   await Template.query().deleteById(id)
-  return true
+  return id
 }

@@ -1,31 +1,52 @@
 import { Template, Workout, Set, CustomError, NotFoundError } from '@features/common'
-import { expandQuery } from '@lib/repository'
+import { expandQuery, expandQueryOne } from '@lib/repository'
+
+const expandOptions = {
+  exercises: 'id',
+  sets: 'id',
+}
 
 export const workoutCreate = async (user, workoutData) => {
-  const { templateId } = workoutData
+  const { templateId, date } = workoutData
 
-  const template = await Template.query().findById(templateId)
-  const exercises = await template.$relatedQuery('exercises')
+  const template = await Template.query().where({
+    id: templateId,
+    userId: user.id,
+  }).first()
+
+  if (!template) {
+    throw new CustomError('template_not_found')
+  }
+
+  const workoutsForCurrentDate = await Workout.query()
+    .whereRaw(`datediff(${`'${date}'` || 'now()'}, createdAt) = 0`)
+    .andWhere('userId', user.id)
+
+  if (workoutsForCurrentDate.length > 0) {
+    throw new CustomError('workout_already_created')
+  }
 
   const workout = await Workout.query().insertAndFetch({
     userId: user.id,
+    createdAt: date ? new Date(date): undefined,
   })
 
+  const exercises = await template.$relatedQuery('exercises')
   await Promise.all(exercises.map((exercise) =>
     workout.$relatedQuery('exercises').relate(exercise.id)
   ))
 
-  return workout
+  return expandQueryOne(
+    Workout.query().findById(workout.id),
+    expandOptions,
+  )
 }
 
 export const workoutsGet = async (user) => {
   const userId = user.id
   const results = await expandQuery({
     query: Workout.query().where({ userId }),
-    expand: {
-      exercises: 'id',
-      sets: 'id',
-    },
+    expand: expandOptions,
   })
   return results
 }
@@ -34,10 +55,7 @@ export const workoutGet = async (user, id) => {
   const userId = user.id
   const results = await expandQuery({
     query: Workout.query().where({ userId, id }),
-    expand: {
-      exercises: 'id',
-      sets: 'id',
-    },
+    expand: expandOptions,
   })
   return results[0]
 }

@@ -17,7 +17,8 @@ export const expandQuery = async ({ query, expand = {} }) => {
     })
   }
 
-  const results = await query
+  let results = await query
+  results = wrapArray(results)
 
   const reduceResult = (result) => {
     for (const relation in expand) {
@@ -39,6 +40,11 @@ export const expandQuery = async ({ query, expand = {} }) => {
   }
 
   return results.map(reduceResult)
+}
+
+export const expandQueryOne = async (query, expand = {}) => {
+  const results = await expandQuery({ query, expand })
+  return results[0]
 }
 
 const wrapArray = (value) => Array.isArray(value) ? value : [value]
