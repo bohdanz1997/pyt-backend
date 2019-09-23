@@ -1,8 +1,12 @@
 import { Template } from '@features/common'
-import { expandQuery } from '@lib/repository'
+import { expandQuery, expandQueryOne } from '@lib/repository'
+
+const expandOptions = {
+  exercises: 'id'
+}
 
 export const templateCreate = async (user, templateData) => {
-  const template = await Template.query().insertAndFetch({
+  const template = await Template.query().insert({
     name: templateData.name,
     description: templateData.description,
     position: templateData.position,
@@ -14,21 +18,22 @@ export const templateCreate = async (user, templateData) => {
     template.$relatedQuery('exercises').relate(exId)
   ))
 
-  return template
+  return expandQueryOne(
+    Template.query().findById(template.id),
+    expandOptions,
+  )
 }
 
 export const templatesGet = async (user, body) => {
   const userId = user.id
   const results = await expandQuery({
     query: Template.query().where({ userId }),
-    expand: {
-      exercises: 'id'
-    },
+    expand: expandOptions,
   })
   return results
 }
 
 export const templateRemove = async (id) => {
   await Template.query().deleteById(id)
-  return id
+  return Number(id)
 }

@@ -19,7 +19,7 @@ export const workoutCreate = async (user, workoutData) => {
   }
 
   const workoutsForCurrentDate = await Workout.query()
-    .whereRaw(`datediff(${`'${date}'` || 'now()'}, createdAt) = 0`)
+    .whereRaw(`datediff(${date ? `'${date}'` : 'now()'}, createdAt) = 0`)
     .andWhere('userId', user.id)
 
   if (workoutsForCurrentDate.length > 0) {
@@ -139,5 +139,5 @@ export const setRemove = async (workoutId, setId) => {
     throw new NotFoundError('workout_not_found')
   }
   await workout.$relatedQuery('sets').deleteById(setId)
-  return true
+  return Number(setId)
 }
