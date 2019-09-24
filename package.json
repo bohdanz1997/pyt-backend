@@ -8,6 +8,7 @@
     "build": "npm run clean && babel -d ./build ./src",
     "start": "npm run build && NODE_ENV=production node build/index.js",
     "dev": "nodemon src/index.js -w src",
+    "migrate": "knex migrate:latest",
     "knex": "knex"
   },
   "keywords": [],
