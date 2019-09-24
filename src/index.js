@@ -3,11 +3,16 @@ require('module-alias/register')
 
 const { knex } = require('./db')
 
-;(async () => {
+if (process.env.NODE_ENV === 'production') {
+  require('dotenv').config()
+}
+
+const main = async () => {
   try {
     require('./server').server()
   } catch (err) {
     console.log(err)
     await knex.destroy()
   }
-})()
+}
+main()
