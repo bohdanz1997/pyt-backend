@@ -60,6 +60,11 @@ export const workoutGet = async (user, id) => {
   return results[0]
 }
 
+export const workoutRemove = async (workoutId) => {
+  await Workout.query().deleteById(workoutId)
+  return Number(workoutId)
+}
+
 export const workoutAddExercise = async (user, workoutId, exerciseId) => {
   const workout = await Workout.query().findById(workoutId)
   if (!workout) {

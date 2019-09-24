@@ -10,6 +10,7 @@ import {
   workoutUpdateSet,
   setsGet,
   setRemove,
+  workoutRemove,
 } from './commands'
 import {
   createWorkoutSchema,
@@ -26,6 +27,7 @@ export const workoutsApi = (workouts) => {
 
   workouts.post('/', validate(createWorkoutSchema), create)
   workouts.get('/', list)
+  workouts.del('/:workoutId', remove)
 
   workouts.group('/:workoutId/exercises', (exercises) => {
     exercises.post('/', validate(workoutExerciseSchema), attachExercise)
@@ -42,6 +44,7 @@ export const workoutsApi = (workouts) => {
 
 const create = (ctx) => workoutCreate(ctx.user, ctx.request.body)
 const list = (ctx) => workoutsGet(ctx.user)
+const remove = (ctx) => workoutRemove(ctx.params.workoutId)
 
 const attachExercise = (ctx) => {
   const { workoutId } = ctx.params
