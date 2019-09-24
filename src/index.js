@@ -7,6 +7,7 @@ if (process.env.NODE_ENV === 'production') {
   require('dotenv').config()
 }
 
+
 const main = async () => {
   try {
     require('./server').server()
