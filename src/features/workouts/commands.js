@@ -135,6 +135,7 @@ export const setsGet = async (user, workoutId) => {
   if (!workout) {
     throw new NotFoundError('workout_not_found')
   }
+  // TODO: clarify way to add workoutId for each set
   return workout.$relatedQuery('sets')
 }
 
