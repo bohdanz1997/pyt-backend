@@ -4,10 +4,14 @@ const Knex = require('knex')
  * @param {Knex} knex
  */
 exports.seed = async (knex) => {
-  await knex.table('exercises').del()
-  await knex.table('groups').del()
+  const insertIfNotExist = async (tableName, whereCondition, values) => {
+    const rows = await knex.table(tableName).where(whereCondition)
+    if (rows.length === 0) {
+      await knex.table(tableName).insert(values)
+    }
+  }
 
-  await knex.table('groups').insert([{
+  const groups = [{
     id: 1,
     name: 'Груди',
     color: '#00cc4c'
@@ -35,9 +39,9 @@ exports.seed = async (knex) => {
     id: 8,
     name: 'Прес',
     color: '#555',
-  }])
+  }]
 
-  await knex.table('exercises').insert([
+  const exercises = [
     { name: 'Жим штанги лежачи', groupId: 1 },
     { name: 'Жим гантелей лежачи', groupId: 1 },
     { name: 'Жим штанги головою вниз', groupId: 1 },
@@ -115,5 +119,13 @@ exports.seed = async (knex) => {
     { name: 'Підйом ніг у висі', groupId: 8 },
     { name: 'Наклони з гантелею в сторони стоячи', groupId: 8 },
     { name: 'Обернені скручування', groupId: 8 },
-  ])
+  ]
+
+  await Promise.all(groups.map((group) =>
+    insertIfNotExist('groups', { name: group.name }, group)
+  ))
+
+  await Promise.all(exercises.map((exercise) =>
+    insertIfNotExist('exercises', { name: exercise.name }, exercise)
+  ))
 }
