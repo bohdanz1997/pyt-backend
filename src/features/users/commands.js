@@ -1,3 +1,4 @@
+import bcrypt from 'bcrypt'
 import { CustomError, Token, User } from '@features/common'
 
 const createToken = (iterations = 3, sep = "") => {
@@ -12,6 +13,7 @@ const createToken = (iterations = 3, sep = "") => {
 }
 
 const USER_TOKEN_SIZE = 5
+const HASH_SALT = 10
 
 export const userRegister = async (registerData) => {
   const { email, name, password } = registerData
@@ -24,7 +26,7 @@ export const userRegister = async (registerData) => {
   const createdUser = await User.query().insert({
     name,
     email,
-    password,
+    password: await bcrypt.hash(password, HASH_SALT),
   })
 
   return {
@@ -53,7 +55,8 @@ export const userLogin = async (loginData) => {
     throw new CustomError('user_not_found')
   }
 
-  if (password !== foundUser.password) {
+  const isCorrectPassword = await bcrypt.compare(password, foundUser.password)
+  if (!isCorrectPassword) {
     throw new CustomError('bad_credentials')
   }
 
